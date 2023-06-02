@@ -1,1 +1,3 @@
 db_integration/venv
+templates/__pycache__
+__pycache__
