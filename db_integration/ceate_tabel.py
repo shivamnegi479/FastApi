@@ -42,8 +42,8 @@ class User(Base):
 class Employee(Base):
     __tablename__ = "Employee"
     emp_id = Column(Integer, primary_key=True, index=True)
-    emp_name = Column(String, unique=True, index=True)
-    emp_email = Column(String, unique=True, index=True)
+    emp_name = Column(String, index=True)
+    emp_email = Column(String, index=True)
     emp_password = Column(String)
 
 
@@ -52,8 +52,8 @@ class Employee(Base):
 Base.metadata.create_all(bind=engine)
 
 class UserCreate(BaseModel):
-    username: str
-    email: str
+    username: str | None
+    email: str |None
     password: str
 class empreate(BaseModel):
     emp_name: str
@@ -87,6 +87,12 @@ async def create_emp(employee: empreate):
     db.commit()
     db.refresh(emp_user)
     return emp_user
+
+@app.get("/empdetails/")
+def getemp():
+    db = SessionLocal()
+    empdetail = db.query(Employee).all()
+    return empdetail
 
 if __name__=="__main__":
     uvicorn.run(app="ceate_tabel:app",host="localhost",reload=True)
