@@ -12,7 +12,7 @@ class Post(BaseModel):
 try:
     conn=psycopg2.connect(host='localhost',database='fastapi',user='postgres',password='26547234s@S',cursor_factory=RealDictCursor)
     cursor=conn.cursor()
-    print("databse connection created successfully")
+    print("database connection created successfully")
 except:
     print("Not Connected")
 
@@ -49,7 +49,7 @@ def fetchpost(id:int):
 def create_post(post:Post = None):
     try:
         if post is None or not post.title or not post.content:
-            raise HTTPException(status_code=200, detail="Missing required field: title or content")
+            raise HTTPException(status_code=205, detail="Missing required field: title or content")
         cursor.execute("INSERT INTO post(title,content,published) values(%s,%s,%s) RETURNING *" ,(post.title,post.content,post.published))
         conn.commit()
         return {"message": "Post created successfully!"}

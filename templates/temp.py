@@ -33,7 +33,6 @@ mypost=[
 
 templates = Jinja2Templates(directory="templates")
 
-
 @app.get("/items/{id}", response_class=HTMLResponse)
 async def read_item(request: Request, id: int):
     post=mypost
