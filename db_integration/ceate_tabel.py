@@ -4,10 +4,13 @@ from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import OperationalError
 from urllib.parse import quote_plus
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 import uvicorn
 
-from fastapi import FastAPI,HTTPException
+from fastapi import FastAPI,HTTPException,Request
 app=FastAPI()
 
 
@@ -29,6 +32,8 @@ except OperationalError as e:
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
+
+
 
 class User(Base):
     __tablename__ = "users"
@@ -60,6 +65,12 @@ class empreate(BaseModel):
     emp_email: str
     emp_password: str
 
+
+app.mount("/static", StaticFiles(directory="templates"), name="static")
+
+templates = Jinja2Templates(directory="templates")
+
+
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
@@ -88,11 +99,12 @@ async def create_emp(employee: empreate):
     db.refresh(emp_user)
     return emp_user
 
-@app.get("/empdetails/")
-def getemp():
+@app.get("/empdetails/",response_class=HTMLResponse)
+def getemp(request: Request):
     db = SessionLocal()
     empdetail = db.query(Employee).all()
-    return empdetail
+    return templates.TemplateResponse("emp.html", {"request": request,"post":empdetail})
+    # return empdetail
 
 if __name__=="__main__":
     uvicorn.run(app="ceate_tabel:app",host="localhost",reload=True)
